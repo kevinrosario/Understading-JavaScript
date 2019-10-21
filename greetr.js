@@ -7,7 +7,7 @@
         return new Greetr.init(firstName, lastName, language);
     }
 
-    // By defining variables outside the function scope we make sure that developers can not change them
+    // Hidden within IIFE scope and not available outside
     const supportedLanguages = ['en', 'es'];
 
     const greetings = {
@@ -15,7 +15,7 @@
         es: 'Hola'
     };
 
-    const formalGreetings = {
+    const formalGreeting = {
         en: 'Greetings',
         es: 'Saludos'
     };
@@ -38,14 +38,14 @@
         greeting: function() {
             return greetings[this.language] + ' ' + this.firstName + '!';
         },
-        formalGreetings: function() {
-            return formalGreetings[this.language] + ', ' + this.fullName();
+        formalGreeting: function() {
+            return formalGreeting[this.language] + ', ' + this.fullName();
         },
         greet: function(formal) {
             let msg;
             
             if(formal) {
-                msg = this.formalGreetings();
+                msg = this.formalGreeting();
             } else {
                 msg = this.greeting();
             }
@@ -70,6 +70,21 @@
             this.validate(lang);
             
             return this;
+        },
+        pageGreeting: function(selector, formal) {
+            // checks for jQuery
+            if(!$) throw 'jQuery not loaded';
+            // Checks for passed selector
+            if(!selector) throw 'Missing jQuery Selector';
+
+            // set the msg to be displayed
+            let msg = (formal ? this.formalGreeting() : this.greeting());
+
+            // set the msg in the HTML element
+            $(selector).html(msg);
+
+            // method can be chained
+            return this;
         }
     };
 
@@ -80,6 +95,8 @@
         this.lastName = lastName || '';
         this.language = language || 'en';
 
+        // validates language when creating the object.
+        this.validate();
     }
 
     // Point the __proto__ of all objects created with Greetr.init to Greetr.prototype.
